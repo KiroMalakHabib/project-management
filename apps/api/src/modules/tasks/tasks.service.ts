@@ -14,6 +14,7 @@ import { CreateTaskInput } from './dto/create-task.input';
 import { UpdateTaskInput } from './dto/update-task.input';
 import { MoveTaskInput } from './dto/move-task.input';
 import { CreateColumnInput } from './dto/create-column.input';
+import { TaskPriority } from '../../common/enums/task.enum';
 import { ProjectsService } from '../projects/projects.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
@@ -95,7 +96,7 @@ export class TasksService {
       ...input,
       reporterId,
       position,
-      priority: input.priority ?? 'MEDIUM',
+      priority: input.priority ?? TaskPriority.MEDIUM,
     });
     const savedTask = await this.taskRepo.save(task);
 

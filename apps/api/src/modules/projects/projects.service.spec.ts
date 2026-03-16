@@ -13,11 +13,9 @@ const mockProject: Project = {
   id: 'proj-1',
   organizationId: 'org-1',
   name: 'Alpha',
-  description: null,
   status: ProjectStatus.ACTIVE,
   organization: mockOrg as any,
   members: [],
-  columns: [],
   createdAt: new Date(),
   updatedAt: new Date(),
 };
