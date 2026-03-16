@@ -5,7 +5,6 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:project_management/features/organizations/domain/organizations_bloc.dart';
 import 'package:project_management/features/organizations/domain/organizations_event.dart';
 import 'package:project_management/features/organizations/domain/organizations_state.dart';
-import 'package:project_management/features/organizations/domain/organization.dart';
 
 class MockGraphQLClient extends Mock implements GraphQLClient {}
 
