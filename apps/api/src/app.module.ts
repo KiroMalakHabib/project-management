@@ -10,6 +10,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { PubSubModule } from './modules/pubsub/pubsub.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -57,6 +59,8 @@ import { ProjectsModule } from './modules/projects/projects.module';
     AuthModule,
     OrganizationsModule,
     ProjectsModule,
+    PubSubModule,
+    TasksModule,
   ],
 })
 export class AppModule {}

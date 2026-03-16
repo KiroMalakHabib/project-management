@@ -99,7 +99,7 @@ class _ProjectsTab extends StatelessWidget {
               ),
               margin: const EdgeInsets.only(bottom: 10),
               child: ListTile(
-                onTap: () => context.push('/projects/${project.id}'),
+                onTap: () => context.push('/projects/${project.id}?name=${Uri.encodeComponent(project.name)}'),
                 title: Text(project.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                 subtitle: project.description != null
                     ? Text(project.description!, maxLines: 1, overflow: TextOverflow.ellipsis)

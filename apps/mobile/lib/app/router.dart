@@ -8,7 +8,9 @@ import '../features/auth/presentation/register_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
 import '../features/organizations/presentation/organizations_screen.dart';
 import '../features/organizations/presentation/organization_detail_screen.dart';
-import '../features/projects/presentation/project_detail_screen.dart';
+import '../core/di/service_locator.dart';
+import '../features/tasks/domain/kanban_bloc.dart';
+import '../features/tasks/presentation/kanban_screen.dart';
 
 GoRouter createRouter(AuthBloc authBloc) {
   return GoRouter(
@@ -56,9 +58,14 @@ GoRouter createRouter(AuthBloc authBloc) {
       ),
       GoRoute(
         path: '/projects/:id',
-        builder: (context, state) => ProjectDetailScreen(
-          projectId: state.pathParameters['id']!,
-        ),
+        builder: (context, state) {
+          final projectId = state.pathParameters['id']!;
+          final projectName = state.uri.queryParameters['name'] ?? 'Project';
+          return BlocProvider(
+            create: (_) => sl<KanbanBloc>(),
+            child: KanbanScreen(projectId: projectId, projectName: projectName),
+          );
+        },
       ),
     ],
   );
