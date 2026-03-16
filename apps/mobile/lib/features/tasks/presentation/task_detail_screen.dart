@@ -3,6 +3,8 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import '../data/task_queries.dart';
 import '../data/task_mutations.dart';
 import '../domain/task.dart';
+import 'attachment_list_widget.dart';
+import 'attachment_upload_widget.dart';
 
 class TaskDetailScreen extends StatefulWidget {
   final String taskId;
@@ -51,6 +53,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         }
 
         final task = Task.fromJson(result.data!['task'] as Map<String, dynamic>);
+        final rawAttachments = (result.data!['task']['attachments'] as List<dynamic>? ?? [])
+            .cast<Map<String, dynamic>>();
 
         return Scaffold(
           appBar: AppBar(
@@ -115,6 +119,20 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                   fontSize: 14,
                   color: task.description?.isNotEmpty == true ? Colors.black87 : Colors.grey,
                 ),
+              ),
+
+              // Attachments
+              const SizedBox(height: 24),
+              const Text('Attachments', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              AttachmentListWidget(
+                attachments: rawAttachments,
+                onDeleted: () => refetch?.call(),
+              ),
+              const SizedBox(height: 10),
+              AttachmentUploadWidget(
+                taskId: widget.taskId,
+                onUploaded: () => refetch?.call(),
               ),
 
               // Comments

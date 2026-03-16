@@ -13,6 +13,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { PubSubModule } from './modules/pubsub/pubsub.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     PubSubModule,
     TasksModule,
     NotificationsModule,
+    UploadsModule,
   ],
 })
 export class AppModule {}

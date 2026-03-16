@@ -29,6 +29,10 @@ dependencies:
 
   # HTTP / Network
   dio: ^5.4.0
+  http: ^1.2.0
+
+  # File Picker
+  file_picker: ^6.0.0
 
   # Utils
   jwt_decoder: ^2.0.1

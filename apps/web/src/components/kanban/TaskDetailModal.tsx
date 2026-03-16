@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useSubscription } from '@apollo/client';
 import { Avatar } from '../ui/Avatar';
-import { Badge } from '../ui/Badge';
+import { FileUploadZone } from '../uploads/FileUploadZone';
+import { AttachmentList } from '../uploads/AttachmentList';
 import { TASK_QUERY } from '@/graphql/queries/task.queries';
+import { TASK_ATTACHMENTS_QUERY } from '@/graphql/queries/upload.queries';
 import { ADD_COMMENT_MUTATION, DELETE_COMMENT_MUTATION, UPDATE_TASK_MUTATION } from '@/graphql/mutations/task.mutations';
 import { COMMENT_ADDED_SUBSCRIPTION } from '@/graphql/subscriptions/task.subscriptions';
 import { priorityConfig } from '@/lib/utils/priority';
@@ -26,11 +28,15 @@ export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
     skip: !taskId,
   });
 
+  const { data: attachmentsData, refetch: refetchAttachments } = useQuery(
+    TASK_ATTACHMENTS_QUERY,
+    { variables: { taskId }, skip: !taskId },
+  );
+
   const [addComment, { loading: addingComment }] = useMutation(ADD_COMMENT_MUTATION);
   const [deleteComment] = useMutation(DELETE_COMMENT_MUTATION);
   const [updateTask] = useMutation(UPDATE_TASK_MUTATION);
 
-  // Real-time comment subscription
   useSubscription(COMMENT_ADDED_SUBSCRIPTION, {
     variables: { taskId },
     skip: !taskId,
@@ -50,6 +56,7 @@ export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
   if (!taskId) return null;
 
   const task = data?.task;
+  const attachments = attachmentsData?.taskAttachments ?? [];
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,35 +142,27 @@ export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
                 </div>
 
                 {/* Attachments */}
-                {task.attachments?.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Attachments</h3>
-                    <div className="space-y-2">
-                      {task.attachments.map((att: any) => (
-                        <a
-                          key={att.id}
-                          href={att.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-2 p-2 rounded-lg border hover:bg-gray-50 text-sm"
-                        >
-                          <span className="text-gray-400">📎</span>
-                          <span className="text-blue-600 hover:underline truncate">{att.fileName}</span>
-                          <span className="text-xs text-gray-400 ml-auto">
-                            {(att.fileSize / 1024).toFixed(0)}KB
-                          </span>
-                        </a>
-                      ))}
-                    </div>
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    Attachments ({attachments.length})
+                  </h3>
+                  <div className="space-y-3">
+                    <AttachmentList
+                      attachments={attachments}
+                      onDeleted={refetchAttachments}
+                    />
+                    <FileUploadZone
+                      taskId={taskId}
+                      onUploaded={refetchAttachments}
+                    />
                   </div>
-                )}
+                </div>
 
                 {/* Comments */}
                 <div>
                   <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                     Comments ({task.comments?.length || 0})
                   </h3>
-
                   <div className="space-y-4 mb-4">
                     {task.comments?.map((comment: any) => (
                       <div key={comment.id} className="flex gap-3">
@@ -176,7 +175,7 @@ export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
                             </span>
                             {comment.isEdited && <span className="text-xs text-gray-300">(edited)</span>}
                           </div>
-                          <p className="text-sm text-gray-700 mt-0.5">{comment.body}</p>
+                          <p className="text-sm text-gray-700 mt-0.5 whitespace-pre-wrap">{comment.body}</p>
                           {comment.author.id === user?.id && (
                             <button
                               onClick={() => handleDeleteComment(comment.id)}
@@ -189,15 +188,13 @@ export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
                       </div>
                     ))}
                   </div>
-
-                  {/* Add comment */}
                   <form onSubmit={handleAddComment} className="flex gap-2">
                     {user && <Avatar name={user.fullName} size="sm" />}
                     <div className="flex-1 flex gap-2">
                       <input
                         value={commentBody}
                         onChange={(e) => setCommentBody(e.target.value)}
-                        placeholder="Write a comment..."
+                        placeholder="Write a comment... (@email to mention)"
                         className="flex-1 px-3 py-1.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                       <button
@@ -225,7 +222,6 @@ export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
                     <span className="text-sm text-gray-400">Unassigned</span>
                   )}
                 </div>
-
                 <div>
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Reporter</p>
                   {task.reporter ? (
@@ -235,7 +231,6 @@ export function TaskDetailModal({ taskId, onClose }: TaskDetailModalProps) {
                     </div>
                   ) : <span className="text-sm text-gray-400">–</span>}
                 </div>
-
                 <div>
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Created</p>
                   <p className="text-sm text-gray-600">{new Date(task.createdAt).toLocaleDateString()}</p>
