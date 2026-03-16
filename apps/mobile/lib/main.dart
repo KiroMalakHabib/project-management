@@ -4,6 +4,7 @@ import 'package:graphql_flutter/graphql_flutter.dart';
 import 'core/di/service_locator.dart';
 import 'features/auth/domain/auth_bloc.dart';
 import 'features/auth/domain/auth_event.dart';
+import 'features/organizations/domain/organizations_bloc.dart';
 import 'app/router.dart';
 
 void main() async {
@@ -22,7 +23,7 @@ class ProjectMgmtApp extends StatefulWidget {
 
 class _ProjectMgmtAppState extends State<ProjectMgmtApp> {
   late final AuthBloc _authBloc;
-  late final router;
+  late final dynamic router;
 
   @override
   void initState() {
@@ -40,8 +41,11 @@ class _ProjectMgmtAppState extends State<ProjectMgmtApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _authBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _authBloc),
+        BlocProvider(create: (_) => sl<OrganizationsBloc>()),
+      ],
       child: MaterialApp.router(
         title: 'ProjectMgmt',
         theme: ThemeData(

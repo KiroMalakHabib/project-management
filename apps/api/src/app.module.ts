@@ -8,6 +8,8 @@ import { join } from 'path';
 import { RedisModule } from './modules/redis/redis.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 @Module({
   imports: [
@@ -53,6 +55,8 @@ import { AuthModule } from './modules/auth/auth.module';
     RedisModule,
     UsersModule,
     AuthModule,
+    OrganizationsModule,
+    ProjectsModule,
   ],
 })
 export class AppModule {}

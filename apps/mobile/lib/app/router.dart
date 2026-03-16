@@ -6,6 +6,9 @@ import '../features/auth/domain/auth_state.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/register_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/organizations/presentation/organizations_screen.dart';
+import '../features/organizations/presentation/organization_detail_screen.dart';
+import '../features/projects/presentation/project_detail_screen.dart';
 
 GoRouter createRouter(AuthBloc authBloc) {
   return GoRouter(
@@ -40,6 +43,22 @@ GoRouter createRouter(AuthBloc authBloc) {
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/organizations',
+        builder: (context, state) => const OrganizationsScreen(),
+      ),
+      GoRoute(
+        path: '/organizations/:id',
+        builder: (context, state) => OrganizationDetailScreen(
+          orgId: state.pathParameters['id']!,
+        ),
+      ),
+      GoRoute(
+        path: '/projects/:id',
+        builder: (context, state) => ProjectDetailScreen(
+          projectId: state.pathParameters['id']!,
+        ),
       ),
     ],
   );
