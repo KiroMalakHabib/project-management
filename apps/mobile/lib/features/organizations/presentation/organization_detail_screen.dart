@@ -178,7 +178,7 @@ class _MembersTab extends StatelessWidget {
               trailing: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: _roleColor(member.role).withOpacity(0.1),
+                  color: _roleColor(member.role).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
