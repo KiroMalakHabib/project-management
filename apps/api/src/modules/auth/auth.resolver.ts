@@ -36,6 +36,12 @@ export class AuthResolver {
     return this.authService.refreshToken(payload.sub, payload.tokenId, token);
   }
 
+  @Query(() => User, { name: 'me' })
+  @UseGuards(JwtAuthGuard)
+  async me(@CurrentUser() user: User): Promise<User> {
+    return user;
+  }
+
   @Mutation(() => Boolean)
   @UseGuards(JwtAuthGuard)
   async logout(

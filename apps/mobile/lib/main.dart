@@ -42,22 +42,25 @@ class _ProjectMgmtAppState extends State<ProjectMgmtApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: _authBloc),
-        BlocProvider(create: (_) => sl<OrganizationsBloc>()),
-        BlocProvider(create: (_) => sl<NotificationsBloc>()),
-      ],
-      child: MaterialApp.router(
-        title: 'ProjectMgmt',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF2563EB),
-            brightness: Brightness.light,
+    return GraphQLProvider(
+      client: ValueNotifier(sl<GraphQLClient>()),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: _authBloc),
+          BlocProvider(create: (_) => sl<OrganizationsBloc>()),
+          BlocProvider(create: (_) => sl<NotificationsBloc>()),
+        ],
+        child: MaterialApp.router(
+          title: 'ProjectMgmt',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color(0xFF2563EB),
+              brightness: Brightness.light,
+            ),
+            useMaterial3: true,
           ),
-          useMaterial3: true,
+          routerConfig: router,
         ),
-        routerConfig: router,
       ),
     );
   }

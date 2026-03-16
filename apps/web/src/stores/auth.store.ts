@@ -36,6 +36,8 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
+          // Cookie lets Next.js middleware verify auth server-side (7-day TTL matches refresh token)
+          document.cookie = `accessToken=${accessToken}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
         }
         set({ user, accessToken, refreshToken, isAuthenticated: true });
       },
@@ -44,6 +46,7 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
+          document.cookie = 'accessToken=; path=/; max-age=0';
         }
         set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
       },
