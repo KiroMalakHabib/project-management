@@ -1,0 +1,14 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+*.log
+.env
+.env.*
+!.env.example
+coverage
+**/*.spec.ts
+**/*.test.ts
+**/*.spec.tsx
+**/*.test.tsx
