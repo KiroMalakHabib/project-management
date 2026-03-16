@@ -1,0 +1,295 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Attachment {
+  createdAt: DateTime!
+  fileName: String!
+  fileSize: Int!
+  fileUrl: String!
+  id: ID!
+  mimeType: String!
+  uploader: User!
+}
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+type Comment {
+  author: User!
+  body: String!
+  createdAt: DateTime!
+  id: ID!
+  isEdited: Boolean!
+  updatedAt: DateTime!
+}
+
+input ConfirmAttachmentInput {
+  fileKey: String!
+  fileName: String!
+  fileSize: Int!
+  mimeType: String!
+  taskId: ID!
+}
+
+input CreateColumnInput {
+  color: String
+  name: String!
+  projectId: ID!
+}
+
+input CreateOrganizationInput {
+  description: String
+  name: String!
+  slug: String!
+}
+
+input CreateProjectInput {
+  description: String
+  name: String!
+  organizationId: String!
+}
+
+input CreateTaskInput {
+  assigneeId: ID
+  columnId: ID!
+  description: String
+  dueDate: DateTime
+  priority: TaskPriority
+  projectId: ID!
+  title: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input InviteMemberInput {
+  email: String!
+  role: OrgRole!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input MoveTaskInput {
+  position: Float!
+  targetColumnId: ID!
+  taskId: ID!
+}
+
+type Mutation {
+  acceptInvite(token: String!): OrganizationMember!
+  addComment(body: String!, taskId: ID!): Comment!
+  addProjectMember(projectId: ID!, role: ProjectRole!, userId: ID!): ProjectMember!
+  archiveProject(id: ID!): Project!
+  confirmAttachment(input: ConfirmAttachmentInput!): Attachment!
+  createColumn(input: CreateColumnInput!): TaskColumn!
+  createOrganization(input: CreateOrganizationInput!): Organization!
+  createProject(input: CreateProjectInput!): Project!
+  createTask(input: CreateTaskInput!): Task!
+  deleteAttachment(id: ID!): Boolean!
+  deleteComment(id: ID!): Boolean!
+  deleteNotification(id: ID!): Boolean!
+  deleteTask(id: ID!): Boolean!
+  generatePresignedUrl(input: PresignedUrlInput!): PresignedUrlResponse!
+  inviteMember(input: InviteMemberInput!, organizationId: ID!): OrganizationInvite!
+  login(input: LoginInput!): AuthPayload!
+  logout(tokenId: String!): Boolean!
+  markAllNotificationsRead: Boolean!
+  markNotificationRead(id: ID!): Notification!
+  moveTask(input: MoveTaskInput!): Task!
+  refreshToken(token: String!): AuthPayload!
+  register(input: RegisterInput!): AuthPayload!
+  removeMember(organizationId: ID!, userId: ID!): Boolean!
+  seedDefaultColumns(projectId: ID!): [TaskColumn!]!
+  updateComment(body: String!, id: ID!): Comment!
+  updateMemberRole(organizationId: ID!, role: OrgRole!, userId: ID!): OrganizationMember!
+  updateTask(input: UpdateTaskInput!): Task!
+}
+
+type Notification {
+  body: String!
+  createdAt: DateTime!
+  id: ID!
+  isRead: Boolean!
+  recipient: User!
+  resourceId: String
+  resourceType: String
+  title: String!
+  type: NotificationType!
+}
+
+enum NotificationType {
+  MEMBER_INVITED
+  MEMBER_JOINED
+  TASK_ASSIGNED
+  TASK_COMMENTED
+  TASK_DUE_SOON
+  TASK_MENTIONED
+}
+
+enum OrgRole {
+  ADMIN
+  MEMBER
+  OWNER
+  VIEWER
+}
+
+type Organization {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  logoUrl: String
+  name: String!
+  slug: String!
+  updatedAt: DateTime!
+}
+
+type OrganizationInvite {
+  createdAt: DateTime!
+  id: ID!
+  invitedEmail: String!
+  role: OrgRole!
+}
+
+type OrganizationMember {
+  id: ID!
+  joinedAt: DateTime!
+  organization: Organization!
+  role: OrgRole!
+  user: User!
+}
+
+input PresignedUrlInput {
+  fileName: String!
+  fileSize: Int!
+  mimeType: String!
+  taskId: ID!
+}
+
+type PresignedUrlResponse {
+  fileKey: String!
+  publicUrl: String!
+  uploadUrl: String!
+}
+
+type Project {
+  createdAt: DateTime!
+  description: String
+  iconUrl: String
+  id: ID!
+  name: String!
+  organization: Organization!
+  status: String!
+  updatedAt: DateTime!
+}
+
+type ProjectMember {
+  id: ID!
+  joinedAt: DateTime!
+  project: Project!
+  role: ProjectRole!
+  user: User!
+}
+
+enum ProjectRole {
+  LEAD
+  MEMBER
+  VIEWER
+}
+
+type Query {
+  me: User!
+  myNotifications: [Notification!]!
+  myOrganizations: [Organization!]!
+  organization(id: ID!): Organization!
+  organizationMembers(organizationId: ID!): [OrganizationMember!]!
+  project(id: ID!): Project!
+  projectColumns(projectId: ID!): [TaskColumn!]!
+  projectMembers(projectId: ID!): [ProjectMember!]!
+  projectTasks(projectId: ID!): [Task!]!
+  projects(organizationId: ID!): [Project!]!
+  task(id: ID!): Task!
+  taskAttachments(taskId: ID!): [Attachment!]!
+  taskComments(taskId: ID!): [Comment!]!
+  unreadNotificationCount: Int!
+}
+
+input RegisterInput {
+  email: String!
+  fullName: String!
+  password: String!
+}
+
+type Subscription {
+  commentAdded(taskId: ID!): Comment!
+  notificationReceived: Notification!
+  taskEvents(projectId: ID!): TaskSubscriptionPayload!
+}
+
+type Task {
+  assignee: User
+  attachments: [Attachment!]!
+  column: TaskColumn!
+  comments: [Comment!]!
+  createdAt: DateTime!
+  description: String
+  dueDate: DateTime
+  id: ID!
+  position: Float!
+  priority: TaskPriority!
+  reporter: User
+  reporterId: String
+  title: String!
+  updatedAt: DateTime!
+}
+
+type TaskColumn {
+  color: String!
+  id: ID!
+  name: String!
+  position: Int!
+  project: Project!
+  tasks: [Task!]!
+  wipLimit: Int!
+}
+
+enum TaskPriority {
+  HIGH
+  LOW
+  MEDIUM
+  URGENT
+}
+
+type TaskSubscriptionPayload {
+  event: String!
+  task: Task!
+}
+
+input UpdateTaskInput {
+  assigneeId: ID
+  columnId: ID
+  description: String
+  dueDate: DateTime
+  id: ID!
+  priority: TaskPriority
+  projectId: ID
+  title: String
+}
+
+type User {
+  avatarUrl: String
+  createdAt: DateTime!
+  email: String!
+  fullName: String!
+  id: ID!
+  isVerified: Boolean!
+  updatedAt: DateTime!
+}

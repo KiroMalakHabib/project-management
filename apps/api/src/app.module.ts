@@ -5,6 +5,15 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { join } from 'path';
+import { RedisModule } from './modules/redis/redis.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
+import { ProjectsModule } from './modules/projects/projects.module';
+import { PubSubModule } from './modules/pubsub/pubsub.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { UploadsModule } from './modules/uploads/uploads.module';
 
 @Module({
   imports: [
@@ -22,7 +31,10 @@ import { join } from 'path';
         migrations: [join(__dirname, 'database', 'migrations', '*.{ts,js}')],
         synchronize: config.get('NODE_ENV') === 'development',
         logging: config.get('NODE_ENV') === 'development',
-        ssl: config.get('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
+        ssl:
+          config.get('NODE_ENV') === 'production'
+            ? { rejectUnauthorized: false }
+            : false,
       }),
     }),
 
@@ -43,6 +55,16 @@ import { join } from 'path';
         limit: 100,
       },
     ]),
+
+    RedisModule,
+    UsersModule,
+    AuthModule,
+    OrganizationsModule,
+    ProjectsModule,
+    PubSubModule,
+    TasksModule,
+    NotificationsModule,
+    UploadsModule,
   ],
 })
 export class AppModule {}

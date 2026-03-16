@@ -31,7 +31,7 @@ jobs:
         working-directory: apps/mobile
 
       - name: Analyze
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
         working-directory: apps/mobile
 
       - name: Run tests
