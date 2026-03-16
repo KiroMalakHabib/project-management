@@ -12,6 +12,7 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { ProjectsModule } from './modules/projects/projects.module';
 import { PubSubModule } from './modules/pubsub/pubsub.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     ProjectsModule,
     PubSubModule,
     TasksModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

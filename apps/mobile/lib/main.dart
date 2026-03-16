@@ -5,6 +5,7 @@ import 'core/di/service_locator.dart';
 import 'features/auth/domain/auth_bloc.dart';
 import 'features/auth/domain/auth_event.dart';
 import 'features/organizations/domain/organizations_bloc.dart';
+import 'features/notifications/domain/notifications_bloc.dart';
 import 'app/router.dart';
 
 void main() async {
@@ -45,6 +46,7 @@ class _ProjectMgmtAppState extends State<ProjectMgmtApp> {
       providers: [
         BlocProvider.value(value: _authBloc),
         BlocProvider(create: (_) => sl<OrganizationsBloc>()),
+        BlocProvider(create: (_) => sl<NotificationsBloc>()),
       ],
       child: MaterialApp.router(
         title: 'ProjectMgmt',

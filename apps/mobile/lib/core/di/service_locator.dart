@@ -5,6 +5,7 @@ import '../graphql/graphql_client.dart';
 import '../../features/auth/domain/auth_bloc.dart';
 import '../../features/organizations/domain/organizations_bloc.dart';
 import '../../features/tasks/domain/kanban_bloc.dart';
+import '../../features/notifications/domain/notifications_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -31,5 +32,9 @@ void setupServiceLocator() {
 
   sl.registerFactory<KanbanBloc>(
     () => KanbanBloc(client: sl<GraphQLClient>()),
+  );
+
+  sl.registerFactory<NotificationsBloc>(
+    () => NotificationsBloc(client: sl<GraphQLClient>()),
   );
 }

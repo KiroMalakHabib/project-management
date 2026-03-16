@@ -11,6 +11,8 @@ import '../features/organizations/presentation/organization_detail_screen.dart';
 import '../core/di/service_locator.dart';
 import '../features/tasks/domain/kanban_bloc.dart';
 import '../features/tasks/presentation/kanban_screen.dart';
+import '../features/notifications/domain/notifications_bloc.dart';
+import '../features/notifications/presentation/notifications_screen.dart';
 
 GoRouter createRouter(AuthBloc authBloc) {
   return GoRouter(
@@ -66,6 +68,13 @@ GoRouter createRouter(AuthBloc authBloc) {
             child: KanbanScreen(projectId: projectId, projectName: projectName),
           );
         },
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<NotificationsBloc>(),
+          child: const NotificationsScreen(),
+        ),
       ),
     ],
   );

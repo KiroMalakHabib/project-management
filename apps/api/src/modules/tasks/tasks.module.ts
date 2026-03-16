@@ -7,11 +7,15 @@ import { Attachment } from './entities/attachment.entity';
 import { TasksService } from './tasks.service';
 import { TasksResolver } from './tasks.resolver';
 import { ProjectsModule } from '../projects/projects.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Task, TaskColumn, Comment, Attachment]),
     ProjectsModule,
+    NotificationsModule,
+    UsersModule,
   ],
   providers: [TasksService, TasksResolver],
   exports: [TasksService],

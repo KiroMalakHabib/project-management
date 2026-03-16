@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  Optional,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -14,6 +15,8 @@ import { UpdateTaskInput } from './dto/update-task.input';
 import { MoveTaskInput } from './dto/move-task.input';
 import { CreateColumnInput } from './dto/create-column.input';
 import { ProjectsService } from '../projects/projects.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class TasksService {
@@ -27,6 +30,8 @@ export class TasksService {
     @InjectRepository(Attachment)
     private readonly attachmentRepo: Repository<Attachment>,
     private readonly projectsService: ProjectsService,
+    @Optional() private readonly notificationsService: NotificationsService,
+    @Optional() private readonly usersService: UsersService,
   ) {}
 
   // ── Columns ──────────────────────────────────────────────────────────────
@@ -92,7 +97,24 @@ export class TasksService {
       position,
       priority: input.priority ?? 'MEDIUM',
     });
-    return this.taskRepo.save(task);
+    const savedTask = await this.taskRepo.save(task);
+
+    // Non-blocking: notify assignee
+    if (input.assigneeId && input.assigneeId !== reporterId && this.notificationsService && this.usersService) {
+      this.usersService.findById(reporterId)
+        .then((reporter) =>
+          this.notificationsService.notifyTaskAssigned({
+            taskId: savedTask.id,
+            taskTitle: savedTask.title,
+            assigneeId: input.assigneeId!,
+            assignerName: reporter.fullName,
+            projectId: input.projectId,
+          }),
+        )
+        .catch(() => {});
+    }
+
+    return savedTask;
   }
 
   async findTaskById(id: string): Promise<Task> {
@@ -120,8 +142,32 @@ export class TasksService {
     const membership = await this.projectsService.getProjectMembership(task.projectId, userId);
     if (!membership) throw new ForbiddenException('Not a project member');
 
+    const prevAssigneeId = task.assigneeId;
     Object.assign(task, input);
-    return this.taskRepo.save(task);
+    const updated = await this.taskRepo.save(task);
+
+    // Non-blocking: notify new assignee
+    if (
+      input.assigneeId &&
+      input.assigneeId !== prevAssigneeId &&
+      input.assigneeId !== userId &&
+      this.notificationsService &&
+      this.usersService
+    ) {
+      this.usersService.findById(userId)
+        .then((updater) =>
+          this.notificationsService.notifyTaskAssigned({
+            taskId: updated.id,
+            taskTitle: updated.title,
+            assigneeId: input.assigneeId!,
+            assignerName: updater.fullName,
+            projectId: updated.projectId,
+          }),
+        )
+        .catch(() => {});
+    }
+
+    return updated;
   }
 
   async moveTask(input: MoveTaskInput, userId: string): Promise<Task> {
@@ -157,7 +203,38 @@ export class TasksService {
     if (!membership) throw new ForbiddenException('Not a project member');
 
     const comment = this.commentRepo.create({ taskId, body, authorId });
-    return this.commentRepo.save(comment);
+    const saved = await this.commentRepo.save(comment);
+
+    // Non-blocking notifications
+    if (this.notificationsService && this.usersService) {
+      this.usersService.findById(authorId).then(async (author) => {
+        // Notify task reporter/assignee (if different from commenter)
+        const notifyIds = new Set<string>();
+        if (task.reporterId && task.reporterId !== authorId) notifyIds.add(task.reporterId);
+        if (task.assigneeId && task.assigneeId !== authorId) notifyIds.add(task.assigneeId);
+
+        for (const recipientId of notifyIds) {
+          await this.notificationsService.notifyComment({
+            taskId: task.id,
+            taskTitle: task.title,
+            commentAuthorName: author.fullName,
+            recipientId,
+          }).catch(() => {});
+        }
+
+        // Parse @mentions
+        await this.notificationsService.notifyMentions({
+          body,
+          taskId: task.id,
+          taskTitle: task.title,
+          authorName: author.fullName,
+          authorId,
+          lookupUserByEmail: (email) => this.usersService.findByEmail(email),
+        }).catch(() => {});
+      }).catch(() => {});
+    }
+
+    return saved;
   }
 
   async updateComment(id: string, body: string, userId: string): Promise<Comment> {
